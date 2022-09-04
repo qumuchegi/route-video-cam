@@ -1,0 +1,27 @@
+.container {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.button {
+  color: rgb(192, 105, 54);
+  background-color: antiquewhite;
+  border: solid 1px #fff;
+  border-radius: 5px;
+  width: 50%;
+  font-size: 20px;
+  margin: 10px;
+  padding: 5px;
+}
+.download-btn {
+  display: inline-block;
+  color: dodgerblue;
+  margin: 10px;
+}
+.recorded-video-summary {
+  color: aquamarine;
+  font-size: 16;
+  margin: 10px;
+}
