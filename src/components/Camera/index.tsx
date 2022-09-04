@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { recordGPS } from "../../utils/recordGPS";
+import createGpx from "gps-to-gpx";
 
 export default function Camera() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -46,14 +47,41 @@ export default function Camera() {
         }))
       ),
     ]);
+    const gpxBlob = new Blob([
+      createGpx(
+        videoPositions.current.map((item) => ({
+          latitude: item.coords.latitude,
+          longitude: item.coords.longitude,
+          elevation: item.coords.altitude,
+          time: item.timestamp,
+        })),
+        {
+          activityName: "run",
+          startTime: videoPositions.current[0].timestamp,
+        }
+      ),
+    ]);
     console.log("videoPositions", videoPositions.current);
     videoPositions.current = [];
     setRecordedVideoNodes((pre) => [
       ...pre,
       <div key={now}>
-        <video src={URL.createObjectURL(blob)} controls width={200} />
-        <a href={URL.createObjectURL(positionsFIleBlob)} download>
+        <div>
+          <video
+            src={URL.createObjectURL(blob)}
+            controls
+            width={window.screen.width}
+            playsInline
+          />
+        </div>
+        <a
+          href={URL.createObjectURL(positionsFIleBlob)}
+          download="position.json"
+        >
           下载位置信息
+        </a>
+        <a href={URL.createObjectURL(gpxBlob)} download="position.gpx">
+          下载 GPX
         </a>
         <div>
           {videoBlobMapToPositions.current
@@ -131,12 +159,14 @@ export default function Camera() {
       <button onClick={onCloseCamera}>关闭摄像头和结束录像</button>
       {isRecordVideoStart && "正在录像.."}
       <div>
-        <video ref={videoRef} />
+        <video ref={videoRef} width={window.screen.width} playsInline />
       </div>
-      <div>
-        <h4>录制视频：</h4>
-        {recordedVideoNodes}
-      </div>
+      {!!recordedVideoNodes.length && (
+        <div>
+          <h4>录制视频：</h4>
+          {recordedVideoNodes}
+        </div>
+      )}
     </div>
   );
 }
